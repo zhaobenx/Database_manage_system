@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>All Treatments</h2>
+
+{% if treatment_list %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col"><a href="?order=name">Name</a></th>
+            <th scope="col"><a href="?order=type">Type</a></th>
+            <th scope="col"><a href="?order=diease">Disease Name</a></th>
+            <th scope="col"><a href="?order=count">Used Times</a></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for treatment in treatment_list %}
+        <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{ treatment.tname }}</td>
+            <td>{{ treatment.ttype }}</td>
+            <td>{{ treatment.deid.dename }}</td>
+            <td>{{ treatment.patienttreatment_set.count }}</td>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No treatment are available.</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addTreatmentModal">
+    <i class="fa fa-plus-circle"></i> Add new treatment
+</button>
+
+<div class="modal fade" id="addTreatmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with treatment_form as form %}
+    {% include 'treatment-create-modal.html' %}
+    {% endwith %}
+</div>
+
+
+
+{% endif %}
+
+{% endblock content %}

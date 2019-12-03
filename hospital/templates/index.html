@@ -1,0 +1,21 @@
+{% extends './base.html' %}
+{% block title %} Hostpital Management System
+{% endblock title %}
+
+{% block content %}
+
+
+
+{% if hospital %}
+<a href="{% url 'hospitals' %}">
+    <h2> All Hostpitals </h2>
+</a>
+<ul class="list-group">
+    {% for h in hospital %}
+    <li class="list-group-item"><a href="{% url 'hospital-detail' h.hid %}">{{ h.hname }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No resuorce are available.</p>
+{% endif %}
+{% endblock content %}

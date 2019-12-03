@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>All Diseases</h2>
+
+{% if disease_list %}
+<i class="fa fa-lightbulb-o" aria-hidden="true"></i> Tip: Click on the disease
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Disease ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">#Treatment</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for disease in disease_list %}
+        <tr tabindex="0" data-toggle="popover" data-placement="right" data-trigger="focus" title="Treatment to this" data-html="true" data-content='<ul class="list-group">{% for treatment in disease.treatment_set.all %}<li class="list-group-item">{{ treatment }}</li>
+            {% endfor %}</ul>'>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{ disease.deid }}</td>
+            <td>{{ disease.dename }}</td>
+            <td>
+                {{ disease.treatment_set.count }}</td>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No diseases are available.</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#addDiseaseModal">
+    <i class="fa fa-plus-circle"></i> Add new disease
+</button>
+
+<div class="modal fade" id="addDiseaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with disease_form as form %}
+    {% include 'disease-create-modal.html' %}
+    {% endwith %}
+</div>
+{% endif %}
+
+{% endblock content %}

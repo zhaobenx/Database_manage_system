@@ -1,0 +1,204 @@
+{% extends './base.html' %}
+{% block title %} Hostpital Management System
+{% endblock title %}
+
+
+{% block page_title %} {{ physician.phfname }}{% endblock  %}
+{% block last_page %}{% url 'hospital-physician' physician.hid.hid  %}{% endblock last_page %}
+
+{% block page_details %}
+<div class="col-md-6 offset-md-3">
+    <table class="table table-borderless table-sm">
+        <thead>
+            <tr>
+                <th scope="col">Telphone</th>
+                <th scope="col">State of Principal License</th>
+                <th scope="col">Hostpital</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ physician.phfname | title }}</td>
+                <td>{{ physician.phtel }}</td>
+                <td>{{ physician.hid.hname }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="col-md-6 offset-md-3">
+    <table class="table table-borderless table-sm">
+        <tbody>
+            <td>
+            <th scope="row"> Number of patients</th>
+            <td>{{ unique_patients }}</td>
+            </td>
+        </tbody>
+    </table>
+</div>
+
+
+<h2><a href="{% url 'physician-detail' physician.phid %}">All Cases</a></h2>
+<div class="row">
+    <div class="p-1 col bg-success text-white clickable" data-toggle="tooltip" title="Display only successful">
+        <a href="?status=successful" class="stretched-link"></a>Successful</div>
+    <div class="p-1 col bg-info text-white clickable" data-toggle="tooltip" title="Display only repeated">
+        <a href="?status=repeated" class="stretched-link"></a>Repeated</div>
+    <div class="p-1 col bg-danger text-white clickable" data-toggle="tooltip" title="Display only failed">
+        <a href="?status=failed" class="stretched-link"></a>Failed</div>
+</div>
+{% if physician.patienttreatment_set %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Birthday</th>
+            <th scope="col">Race</th>
+            <th scope="col">Start Date</th>
+            <th scope="col">Frequency</th>
+            <th scope="col">Treatment Name</th>
+            <th scope="col">Treatment Type</th>
+            <th scope="col">Disease Name</th>
+            {% if user.is_authenticated %}
+            <th></th>
+            {% endif %}
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for pt, case in cases %}
+        <tr>
+            {% with pt.pid as patient %}
+            {% with pt.tid as treatment %}
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{patient.pfname | title}} {{patient.plname | title}}</td>
+            <td>{{patient.pgender}}</td>
+            <td>{{patient.pbd | date:'m/d/Y'}}</td>
+            <td>{{patient.prace}}</td>
+            <td>{{pt.tdate|date:'m/d/Y'}}</td>
+            <td>{{pt.tfreq}}</td>
+            <td
+                class="{% if pt.tstatus == "S"%}bg-success{% elif pt.tstatus == "R" %}bg-info{% elif pt.tstatus == "F"%}bg-danger{% endif %}">
+                {{treatment.tname}}</td>
+            <td>{{treatment.ttype}}</td>
+            <td>{{treatment.deid.dename}}</td>
+
+
+            {% if user.is_authenticated %}
+            <td>
+
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-light " data-toggle="modal"
+                        data-target="#modal_modify_{{ forloop.counter }}"><i class="fa fa-wrench"
+                            aria-hidden="true"></i>Update
+                    </button>
+
+                    <button type="button" class="btn btn-danger " data-toggle="modal"
+                        data-target="#modal_delete_{{ forloop.counter }}"><i class="fa fa-trash-o"
+                            aria-hidden="true"></i>Delete
+                    </button>
+                </div>
+
+
+                <div id="modal_modify_{{ forloop.counter }}" class="modal fade" tabindex="-1" role="dialog">
+                    {% with case as form %}
+                    {% with pt.id as case_id %}
+                    {% include "case-update-modal.html" %}
+                    {% endwith %}
+                    {% endwith %}
+                </div>
+                <div id="modal_delete_{{ forloop.counter }}" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure to delete {{department.dname}}?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <form action="{% url 'case-delete' pt.id %}" method="post">
+                                    {% csrf_token %}
+                                    <input type="submit" type="button" class="btn btn-danger" value="Delete" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            {% endif %}
+            {% endwith %}
+            {% endwith %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No treatments are available.</p>
+{% endif %}
+
+<a href="{% url 'diseases' %}" class="badge badge-pill badge-warning float-right">List of all Diseases</a>
+<a href="{% url 'treatments' %}" class="badge badge-pill badge-info float-right">List of all Treatment</a>
+<a href="{% url 'patients' %}" class="badge badge-pill badge-success float-right">List of all Patients</a>
+</br>
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addPatientModal">
+    <i class="fa fa-plus-circle"></i> Add new patient
+</button>
+
+<div class="modal fade" id="addPatientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with patient_form as form %}
+    {% include 'patient-create-modal.html' %}
+    {% endwith %}
+</div>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCaseModal">
+    <i class="fa fa-plus-circle"></i> Add new case
+</button>
+
+<div class="modal fade" id="addCaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with patienttreatment_form as form %}
+    {% include 'patienttreatment-create-modal.html' %}
+    {% endwith %}
+</div>
+
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#addTreatmentModal">
+    <i class="fa fa-plus-circle"></i> Add new treatment
+</button>
+
+<div class="modal fade" id="addTreatmentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with treatment_form as form %}
+    {% include 'treatment-create-modal.html' %}
+    {% endwith %}
+</div>
+
+
+<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#addDiseaseModal">
+    <i class="fa fa-plus-circle"></i> Add new disease
+</button>
+
+<div class="modal fade" id="addDiseaseModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with disease_form as form %}
+    {% include 'disease-create-modal.html' %}
+    {% endwith %}
+</div>
+
+
+{% endif %}
+
+
+{% endblock content %}

@@ -1,0 +1,40 @@
+{% extends './base.html' %}
+{% block title %} Hostpital Management System
+{% endblock title %}
+
+{% block content %}
+
+
+{% if hospital_list %}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            {% block details_title %}
+            <th scope="col">#</th>
+            <th scope="col">Hostpital</th>
+            <th scope="col">Address</th>
+            <th scope="col">City</th>
+            <th scope="col">State</th>
+            <th scope="col">Zipcode</th>
+            {% endblock  %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for hospital in hospital_list  %}
+        <tr onclick="window.location='{% url 'hospital-detail' hospital.hid %}';">
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{ hospital.hname }}</td>
+            <td>{{ hospital.hst_address }}</td>
+            <td>{{ hospital.hst_city }}</td>
+            <td>{{ hospital.hstate }}</td>
+            <td>{{ hospital.hzip }}</td>
+        </tr>
+        {% endfor  %}
+    </tbody>
+</table>
+
+{% else %}
+<p>No resuorce are available.</p>
+{% endif %}
+{% endblock content %}

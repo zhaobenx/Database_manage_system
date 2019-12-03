@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>All Patients</h2>
+
+{% if patient_list %}
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Birthday</th>
+            <th scope="col">Race</th>
+            <th scope="col">Martial Status</th>
+            <th scope="col">#Treatment</th>
+            {% if user.is_authenticated %}
+            <th></th>
+            {% endif %}
+
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient, form in patient_list %}
+        <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{patient.pfname | title}} {{patient.plname | title}}</td>
+            <td>{{patient.get_pgender_display }}</td>
+            <td>{{patient.pbd | date:'m/d/Y'}}</td>
+            <td>{{patient.prace}}</td>
+            <td>{{patient.get_pstatus_display }}</td>
+            <td>{{patient.patienttreatment_set.count }}</td>
+
+            {% if user.is_authenticated %}
+            <td>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-light " data-toggle="modal"
+                        data-target="#modal_modify_{{ forloop.counter }}"><i class="fa fa-wrench"
+                            aria-hidden="true"></i>Update
+                    </button>
+
+                    <button type="button" class="btn btn-danger" data-toggle="modal"
+                        data-target="#modal_delete_{{ forloop.counter }}"><i class="fa fa-trash-o"
+                            aria-hidden="true"></i>
+                        Delete</button>
+                </div>
+                    
+                    <div id="modal_modify_{{ forloop.counter }}" class="modal fade" tabindex="-1" role="dialog">
+
+                        {% with patient.pid as patient_id %}
+                        {% include "patient-update-modal.html" %}
+                        {% endwith %}
+
+                    </div>
+                    <div id="modal_delete_{{ forloop.counter }}" class="modal fade" tabindex="-1" role="dialog">
+                        {% include 'patient-delete-modal.html' %}
+                    </div>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No resuorce are available.</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addPatientModal">
+    <i class="fa fa-plus-circle"></i> Add new patient
+</button>
+
+<div class="modal fade" id="addPatientModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    {% with patient_form as form %}
+    {% include 'patient-create-modal.html' %}
+    {% endwith %}
+</div>
+
+
+{% endif %}
+
+{% endblock content %}

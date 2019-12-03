@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %} {{ HTTP_HOST  }} {% endblock %}</title>
+    <link rel="icon" href="{% static 'hospital/favicon.ico' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <style>
+        body {
+            min-height: 800px;
+            padding-top: 56px;
+        }
+
+        .float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #0C9;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            box-shadow: 2px 2px 3px #999;
+        }
+
+        .float:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: scale(1.4);
+        }
+
+        .my-float {
+            margin-top: 22px;
+        }
+
+        .clickable:hover {
+            transform: scale(1.1);
+            z-index: 1;
+        }
+    </style>
+    {#   <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"> #}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">Hosipital System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="{% url 'index' %}">Home <span
+                        class="sr-only">(current)</span></a>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+        <a class="nav-item nav-link active text-white">{{ user.username }}</a>
+        <a class="btn btn-outline-warning" href="{% url 'logout' %}"> Logout </a>
+        {% else %}
+        <a id="loginButton" href="{% url 'login' %}" class="btn btn-outline-light">Login </a>
+        {% endif %}
+
+    </nav>
+
+    <div class="jumbotron text-center">
+        <h1>{% block page_title %} Manage {% endblock %}</h1>
+        <div class="container">{% block page_details %} A hosipital manage system {% endblock %}</div>
+    </div>
+    <a href="{% block last_page %}#{% endblock %}" onclick="history.back()" class="float">
+        <i class="fa fa-arrow-left my-float" aria-hidden="true"></i>
+    </a>
+
+    <div class="container">
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+    <footer class="page-footer small text-secondary">
+        <div class="footer-copyright text-center py-3">
+            <hr>
+            © 2019 Copyright:
+            Lingfeng Zhao & Zhixia Zhang
+            <div>Icons made by <a href="https://www.flaticon.com/authors/dinosoftlabs"
+                    title="DinosoftLabs">DinosoftLabs</a>from <a href="https://www.flaticon.com/"
+                    title="Flaticon">www.flaticon.com</a></div>
+            Made with <i class="fa fa-heart"></i> Bootstrap, Django, Font Awesome
+        </div>
+    </footer>
+</body>
+
+</html>

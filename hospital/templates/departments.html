@@ -1,0 +1,36 @@
+{% extends './base.html' %}
+{% block title %} Hostpital Management System
+{% endblock title %}
+
+{% block content %}
+
+
+{% if department_list %}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            {% block details_title %}
+            <th scope="col">#</th>
+            <th scope="col">Department</th>
+            <th scope="col">Telphone</th>
+            <th scope="col">Hostpital</th>
+            {% endblock  %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for department in department_list  %}
+        <tr onclick="window.location='{% url 'department-detail' department.did %}';">
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{ department.dname }}</td>
+            <td>{{ department.dtel }}</td>
+            <td> <a href="{% url 'hospital-detail' department.hid.hid %}">{{ department.hid.hname }}</a></td>
+        </tr>
+        {% endfor  %}
+    </tbody>
+</table>
+
+{% else %}
+<p>No resuorce are available.</p>
+{% endif %}
+{% endblock content %}

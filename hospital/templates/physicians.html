@@ -1,0 +1,143 @@
+{% extends './base.html' %}
+{% block title %} Hostpital Management System
+{% endblock title %}
+
+
+{% block page_title %} {{ hospital.hname }}{% endblock  %}
+{% block last_page %}{% url 'hospital-detail' hospital.hid  %}{% endblock last_page %}
+
+
+{% block page_details %}
+<div class="col-md-6 offset-md-3">
+  <table class="table table-borderless table-sm">
+    <thead>
+      <tr>
+        {% block details_title %}
+        <th scope="col">Address</th>
+        <th scope="col">City</th>
+        <th scope="col">State</th>
+        <th scope="col">Zipcode</th>
+        {% endblock  %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {% block details_content %}
+        <td>{{ hospital.hst_address }}</td>
+        <td>{{ hospital.hst_city }}</td>
+        <td>{{ hospital.hstate }}</td>
+        <td>{{ hospital.hzip }}</td>
+        {% endblock  %}
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<h2> All Physicians </h2>
+{% if hospital.physician_set %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First Name</th>
+      <th scope="col">Telephone</th>
+      <th scope="col">SPL</th>
+      {% if user.is_authenticated %}
+      <th></th>
+      {% endif %}
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for physician in hospital.physician_set.all %}
+    <tr >
+      <th scope="row">{{forloop.counter}}</th>
+      <td onclick="window.location='{% url 'physician-detail' physician.phid %}';">{{physician.phfname | title}}</td>
+      <td onclick="window.location='{% url 'physician-detail' physician.phid %}';">{{physician.phtel | title}}</td>
+      <td onclick="window.location='{% url 'physician-detail' physician.phid %}';">{{physician.phspl | title}}</td>
+
+      {% if user.is_authenticated %}
+      <td><button type="button" class="btn btn-danger" data-toggle="modal"
+          data-target="#modal_delete_{{ forloop.counter }}"><i class="fa fa-trash-o" aria-hidden="true"></i>
+          Delete</button>
+        <div id="modal_delete_{{ forloop.counter }}" class="modal fade" tabindex="-1" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>are you sure to delete {{physician.phfname | title}}?</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="{% url "physician-delete" physician.phid %}" method="post">
+                  {% csrf_token %}
+                  <input type="submit" type="button" class="btn btn-danger" value="Delete" />
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </td>
+      {% endif %}
+
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>No Physician.</p>
+{% endif %}
+
+{% if user.is_authenticated %}
+<button type="button" class="btn btn-success" data-toggle="modal" data-target="#addModal">
+  <i class="fa fa-plus-circle"></i> Add new physician
+</button>
+{% endif %}
+
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add new physician</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'physician-add'%}" method="post">
+          {% csrf_token %}
+          {% for field in add_form %}
+          <div class="form-group">
+            {{ field.errors }}
+
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}
+            <p class="help">{{ field.help_text|safe }}</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+          <input type="submit" class="btn btn-primary" value="Submit">
+        </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+{% endblock content %}
