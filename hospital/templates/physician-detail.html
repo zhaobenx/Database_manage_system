@@ -78,15 +78,15 @@
             {% with pt.tid as treatment %}
             <th scope="row">{{forloop.counter}}</th>
             <td>{{patient.pfname | title}} {{patient.plname | title}}</td>
-            <td>{{patient.pgender}}</td>
+            <td>{{patient.get_pgender_display}}</td>
             <td>{{patient.pbd | date:'m/d/Y'}}</td>
-            <td>{{patient.prace}}</td>
+            <td>{{patient.get_prace_display}}</td>
             <td>{{pt.tdate|date:'m/d/Y'}}</td>
             <td>{{pt.tfreq}}</td>
             <td
                 class="{% if pt.tstatus == "S"%}bg-success{% elif pt.tstatus == "R" %}bg-info{% elif pt.tstatus == "F"%}bg-danger{% endif %}">
                 {{treatment.tname}}</td>
-            <td>{{treatment.ttype}}</td>
+            <td>{{treatment.get_ttype_display}}</td>
             <td>{{treatment.deid.dename}}</td>
 
 

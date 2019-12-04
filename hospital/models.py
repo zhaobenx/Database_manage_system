@@ -96,7 +96,7 @@ class PatientTreatment(models.Model):
 
 
 class Treatment(models.Model):
-    TYPE = [("Pharma", "Pharma"), ("Procedure", "Procedure"), ("Surgery", "Surgery")]
+    TYPE = [("PHARMA", "Pharma"), ("PROCEDURE", "Procedure"), ("SURGERY", "Surgery")]
     tid = models.AutoField(primary_key=True)
     tname = models.CharField(max_length=50)
     ttype = models.CharField(max_length=10,choices=TYPE)

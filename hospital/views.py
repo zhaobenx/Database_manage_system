@@ -32,9 +32,6 @@ from .form import (
 )
 
 # pylint: disable=no-member
-# Create your views here.
-def index(request):
-    return render(request, "index.html")
 
 
 class IndexView(generic.ListView):
